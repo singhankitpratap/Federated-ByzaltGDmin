@@ -1,0 +1,31 @@
+version: '3'
+services:
+  master:
+    image: master-node:latest
+    environment:
+      - CLIENTS=0
+    ports:
+      - "80:80"
+    networks:
+      - my_network
+
+  client:
+    image: client-node:latest
+    depends_on:
+      - master
+    deploy:
+      replicas: 0
+      restart_policy:
+        condition: on-failure
+    environment:
+      - CLIENT_ID={{.Task.Slot}}
+    volumes:
+      - common_data:/app/data
+    networks:
+      - my_network
+
+networks:
+  my_network:
+
+volumes:
+  common_data:
